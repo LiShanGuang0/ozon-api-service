@@ -1,0 +1,279 @@
+INFO:     Started server process [32656]
+INFO:     Waiting for application startup.
+2026-05-11 14:06:37,784 INFO [app.workers.import_task_poller] Import task poller started
+2026-05-11 14:06:38,054 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+2026-05-11 14:06:48,291 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:06:58,607 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:07:08,803 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:07:19,099 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:07:29,296 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:07:39,511 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:07:49,709 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:07:59,914 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:08:10,138 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:08:20,329 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:08:30,701 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:08:40,905 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:08:51,162 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:09:01,496 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:09:11,696 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:09:21,891 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:09:32,140 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:09:42,351 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:09:52,598 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:10:12,614 ERROR [app.workers.import_task_poller] Import task poller failed
+Traceback (most recent call last):
+  File "D:\tool\Python\Python312\Lib\site-packages\pymysql\connections.py", line 649, in connect
+    sock = socket.create_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\tool\Python\Python312\Lib\socket.py", line 865, in create_connection
+    raise exceptions[0]
+  File "D:\tool\Python\Python312\Lib\socket.py", line 850, in create_connection
+    sock.connect(sa)
+TimeoutError: timed out
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\selftProject\ozon-api-service\app\workers\import_task_poller.py", line 48, in _run
+    await poll_once(limit=batch_size, min_age_seconds=min_age_seconds)
+  File "D:\selftProject\ozon-api-service\app\workers\poll_import_tasks.py", line 13, in poll_once
+    rows = fetch_all(
+           ^^^^^^^^^^
+  File "D:\selftProject\ozon-api-service\app\db\mysql.py", line 42, in fetch_all
+    with mysql_conn() as conn:
+         ^^^^^^^^^^^^
+  File "D:\tool\Python\Python312\Lib\contextlib.py", line 137, in __enter__
+    return next(self.gen)
+           ^^^^^^^^^^^^^^
+  File "D:\selftProject\ozon-api-service\app\db\mysql.py", line 14, in mysql_conn
+    conn = pymysql.connect(
+           ^^^^^^^^^^^^^^^^
+  File "D:\tool\Python\Python312\Lib\site-packages\pymysql\connections.py", line 361, in __init__
+    self.connect()
+  File "D:\tool\Python\Python312\Lib\site-packages\pymysql\connections.py", line 716, in connect
+    raise exc
+pymysql.err.OperationalError: (2003, "Can't connect to MySQL server on '182.92.251.60' (timed out)")
+2026-05-11 14:10:22,823 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:10:33,045 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:10:43,267 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:10:53,468 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:11:03,705 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:11:13,915 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:11:24,128 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:11:34,331 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:11:44,560 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:11:54,743 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:12:04,975 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:12:15,217 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+ERROR:    Exception in ASGI application
+Traceback (most recent call last):
+  File "D:\tool\Python\Python312\Lib\site-packages\anyio\streams\memory.py", line 98, in receive
+    return self.receive_nowait()
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\tool\Python\Python312\Lib\site-packages\anyio\streams\memory.py", line 93, in receive_nowait
+    raise WouldBlock
+anyio.WouldBlock
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\tool\Python\Python312\Lib\site-packages\starlette\middleware\base.py", line 157, in call_next
+    message = await recv_stream.receive()
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\tool\Python\Python312\Lib\site-packages\anyio\streams\memory.py", line 118, in receive
+    raise EndOfStream
+anyio.EndOfStream
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\tool\Python\Python312\Lib\site-packages\uvicorn\protocols\http\httptools_impl.py", line 409, in run_asgi
+    result = await app(  # type: ignore[func-returns-value]
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\tool\Python\Python312\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 60, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\tool\Python\Python312\Lib\site-packages\fastapi\applications.py", line 1054, in __call__
+    await super().__call__(scope, receive, send)
+  File "D:\tool\Python\Python312\Lib\site-packages\starlette\applications.py", line 113, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\tool\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 187, in __call__
+    raise exc
+  File "D:\tool\Python\Python312\Lib\site-packages\starlette\middleware\errors.py", line 165, in __call__
+    await self.app(scope, receive, _send)
+  File "D:\tool\Python\Python312\Lib\site-packages\starlette\middleware\base.py", line 187, in __call__
+    response = await self.dispatch_func(request, call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\selftProject\ozon-api-service\app\core\responses.py", line 25, in dispatch
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\tool\Python\Python312\Lib\site-packages\starlette\middleware\base.py", line 163, in call_next
+    raise app_exc
+  File "D:\tool\Python\Python312\Lib\site-packages\starlette\middleware\base.py", line 149, in coro
+    await self.app(scope, receive_or_disconnect, send_no_error)
+  File "D:\tool\Python\Python312\Lib\site-packages\starlette\middleware\exceptions.py", line 62, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+  File "D:\tool\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "D:\tool\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "D:\tool\Python\Python312\Lib\site-packages\starlette\routing.py", line 715, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "D:\tool\Python\Python312\Lib\site-packages\starlette\routing.py", line 735, in app
+    await route.handle(scope, receive, send)
+  File "D:\tool\Python\Python312\Lib\site-packages\starlette\routing.py", line 288, in handle
+    await self.app(scope, receive, send)
+  File "D:\tool\Python\Python312\Lib\site-packages\starlette\routing.py", line 76, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+  File "D:\tool\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 53, in wrapped_app
+    raise exc
+  File "D:\tool\Python\Python312\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+  File "D:\tool\Python\Python312\Lib\site-packages\starlette\routing.py", line 73, in app
+    response = await f(request)
+               ^^^^^^^^^^^^^^^^
+  File "D:\tool\Python\Python312\Lib\site-packages\fastapi\routing.py", line 301, in app
+    raw_response = await run_endpoint_function(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\tool\Python\Python312\Lib\site-packages\fastapi\routing.py", line 214, in run_endpoint_function
+    return await run_in_threadpool(dependant.call, **values)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\tool\Python\Python312\Lib\site-packages\starlette\concurrency.py", line 39, in run_in_threadpool
+    return await anyio.to_thread.run_sync(func, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\tool\Python\Python312\Lib\site-packages\anyio\to_thread.py", line 33, in run_sync
+    return await get_asynclib().run_sync_in_worker_thread(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\tool\Python\Python312\Lib\site-packages\anyio\_backends\_asyncio.py", line 877, in run_sync_in_worker_thread
+    return await future
+           ^^^^^^^^^^^^
+  File "D:\tool\Python\Python312\Lib\site-packages\anyio\_backends\_asyncio.py", line 807, in run
+    result = context.run(func, *args)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\selftProject\ozon-api-service\app\api\routes\merchant.py", line 109, in merchant_push_tasks
+    MerchantConsoleService().task_page(
+  File "D:\selftProject\ozon-api-service\app\services\merchant_console.py", line 157, in task_page
+    rows = self.tasks.list(client_id=client_id, status=status, limit=size, offset=offset)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\selftProject\ozon-api-service\app\repositories\merchant.py", line 146, in list
+    return fetch_all(
+           ^^^^^^^^^^
+  File "D:\selftProject\ozon-api-service\app\db\mysql.py", line 44, in fetch_all
+    cursor.execute(sql, params)
+  File "D:\tool\Python\Python312\Lib\site-packages\pymysql\cursors.py", line 153, in execute
+    result = self._query(query)
+             ^^^^^^^^^^^^^^^^^^
+  File "D:\tool\Python\Python312\Lib\site-packages\pymysql\cursors.py", line 322, in _query
+    conn.query(q)
+  File "D:\tool\Python\Python312\Lib\site-packages\pymysql\connections.py", line 563, in query
+    self._affected_rows = self._read_query_result(unbuffered=unbuffered)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\tool\Python\Python312\Lib\site-packages\pymysql\connections.py", line 825, in _read_query_result
+    result.read()
+  File "D:\tool\Python\Python312\Lib\site-packages\pymysql\connections.py", line 1199, in read
+    first_packet = self.connection._read_packet()
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\tool\Python\Python312\Lib\site-packages\pymysql\connections.py", line 775, in _read_packet
+    packet.raise_for_error()
+  File "D:\tool\Python\Python312\Lib\site-packages\pymysql\protocol.py", line 219, in raise_for_error
+    err.raise_mysql_exception(self._data)
+  File "D:\tool\Python\Python312\Lib\site-packages\pymysql\err.py", line 150, in raise_mysql_exception
+    raise errorclass(errno, errval)
+pymysql.err.OperationalError: (1052, "Column 'client_id' in where clause is ambiguous")
+2026-05-11 14:12:25,459 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:12:35,685 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:12:45,892 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:12:56,109 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:13:06,670 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:13:16,924 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:13:27,161 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:13:37,473 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:13:47,671 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:13:57,880 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:14:08,109 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:14:18,321 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:14:28,574 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:14:38,877 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:14:49,076 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:14:59,498 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:15:09,731 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:15:19,929 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:15:30,118 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:15:40,324 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:15:50,565 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:16:00,743 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:16:10,971 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:16:21,174 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:16:31,432 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:16:41,597 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:16:51,829 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:17:02,038 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:17:12,215 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:17:22,491 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:17:32,693 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:17:42,916 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:17:53,123 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:18:03,327 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:18:13,535 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:18:23,890 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:18:34,122 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:18:44,330 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:18:54,528 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:19:04,762 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:19:15,011 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:19:25,257 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:19:35,463 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:19:45,750 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:19:55,955 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:20:06,156 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:20:31,401 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:20:41,618 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:20:51,876 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:21:02,077 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:21:12,318 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:21:22,517 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:21:32,682 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:21:42,900 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:21:53,097 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:22:03,310 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:22:13,620 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:22:23,962 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:22:34,238 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:22:44,453 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:22:54,632 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:23:04,879 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:23:15,125 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:23:25,358 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:23:35,875 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:23:46,089 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:23:56,636 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:24:06,848 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:24:17,516 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:24:27,728 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:24:37,948 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:24:48,181 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:24:58,449 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:25:08,646 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:25:18,843 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:25:29,069 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:25:39,237 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:25:49,579 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:26:00,016 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:26:10,245 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:26:20,491 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:26:30,679 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:26:40,897 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:26:51,092 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:27:01,286 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:27:11,522 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:27:21,716 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:27:31,941 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:27:42,150 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:27:52,368 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:28:02,796 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:28:13,027 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:28:23,241 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired
+2026-05-11 14:28:33,484 WARNING [app.workers.poll_import_tasks] Skip task 4402729544: credential is missing or expired

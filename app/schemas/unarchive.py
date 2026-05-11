@@ -1,0 +1,55 @@
+from typing import Any, Literal
+
+from pydantic import ConfigDict, Field, model_validator
+
+from app.schemas.common import SchemaModel
+
+
+class ProductUnarchiveRequest(SchemaModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    offer_id: list[str] = Field(
+        default_factory=list,
+        description="卖家系统商品货号。服务会先调用 /v3/product/info/list 转换为 Ozon product_id。",
+        examples=[["LOCAL-SKU-001", "LOCAL-SKU-002"]],
+    )
+    confirm: bool = Field(
+        default=True,
+        description="是否在还原后再次查询商品信息，并用 is_archived=false、is_autoarchived=false 确认结果。",
+    )
+
+    @model_validator(mode="after")
+    def validate_identifiers(self) -> "ProductUnarchiveRequest":
+        total = len(self.offer_id)
+        if total == 0:
+            raise ValueError("offer_id 至少传一个")
+        if total > 1000:
+            raise ValueError("offer_id 总数不能超过 1000")
+        return self
+
+
+class ProductUnarchiveItemResult(SchemaModel):
+    offer_id: str | None = Field(default=None, description="卖家系统商品货号")
+    product_id: int | None = Field(default=None, description="Ozon 商品 ID")
+    sku: int | None = Field(default=None, description="Ozon SKU")
+    before_is_archived: bool | None = Field(default=None, description="还原前是否手动归档")
+    before_is_autoarchived: bool | None = Field(default=None, description="还原前是否自动归档")
+    after_is_archived: bool | None = Field(default=None, description="还原后是否手动归档")
+    after_is_autoarchived: bool | None = Field(default=None, description="还原后是否自动归档")
+    status: Literal["success", "failed", "skipped", "not_found", "not_archived"] = Field(description="单商品处理状态")
+    skip_reason: str | None = Field(default=None, description="跳过原因")
+    error_message: str | None = Field(default=None, description="失败原因")
+
+
+class ProductUnarchiveResponse(SchemaModel):
+    request_id: str = Field(description="本地还原请求 ID")
+    archive_task_id: int = Field(description="本地归档工作流批次 ID，对应 ozon_archive_tasks.id")
+    status: Literal["success", "partial", "failed", "skipped"] = Field(description="批次状态")
+    total_count: int = Field(description="请求或解析出的商品总数")
+    success_count: int = Field(description="成功数量")
+    failed_count: int = Field(description="失败数量")
+    skipped_count: int = Field(description="跳过数量")
+    precheck: dict[str, Any] = Field(default_factory=dict, description="Ozon /v3/product/info/list 还原前查询响应")
+    unarchive_result: dict[str, Any] = Field(default_factory=dict, description="Ozon /v1/product/unarchive 响应，批量超过 100 时包含 chunks")
+    confirm: dict[str, Any] = Field(default_factory=dict, description="Ozon /v3/product/info/list 还原后确认响应")
+    items: list[ProductUnarchiveItemResult] = Field(default_factory=list, description="单商品还原结果")

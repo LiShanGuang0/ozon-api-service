@@ -1,0 +1,9 @@
+MySQL
+地址：127.0.0.1:3306
+库名：ozon-service
+用户名：ozonservice
+密码：ozonService123
+Redis
+地址：127.0.0.1:6379
+密码：redis123456
+库：0
