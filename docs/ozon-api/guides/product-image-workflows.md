@@ -535,10 +535,7 @@ POST /api/ozon/products/info/attributes
 
 | 参数 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `filter.offer_id` | array | 否 | 按货号过滤。 |
-| `filter.product_id` | array | 否 | 按 product_id 过滤。 |
-| `limit` | integer | 是 | 每页数量，1 到 1000。 |
-| `last_id` | string | 否 | 分页游标，首次留空。 |
+| `offer_id` | string | 是 | 卖家系统商品货号。服务内部会转为 Ozon `filter.offer_id` 查询。 |
 
 #### 响应参数
 

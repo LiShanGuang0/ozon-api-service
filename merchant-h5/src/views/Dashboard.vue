@@ -5,7 +5,6 @@ import {
   AlertCircle,
   ArrowRight,
   CheckCircle2,
-  ClipboardList,
   Clock3,
   PackageSearch,
   Send,
@@ -26,13 +25,6 @@ const data = ref<DashboardData | null>(null)
 const metricIcons = [Send, CheckCircle2, AlertCircle, Clock3]
 const metricTones = ['blue', 'green', 'red', 'orange'] as const
 const featureCards = [
-  {
-    titleKey: 'pushTasks',
-    descKey: 'pushTasksDesc',
-    path: '/push-tasks',
-    icon: ClipboardList,
-    tone: 'blue',
-  },
   {
     titleKey: 'products',
     descKey: 'productsDesc',

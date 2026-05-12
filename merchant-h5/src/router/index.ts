@@ -21,12 +21,6 @@ const router = createRouter({
       meta: { title: '工作台', titleKey: 'workspace' },
     },
     {
-      path: '/push-tasks',
-      name: 'pushTasks',
-      component: () => import('../views/PushTasks.vue'),
-      meta: { title: '推送任务', titleKey: 'pushTasks' },
-    },
-    {
       path: '/products',
       name: 'products',
       component: () => import('../views/Products.vue'),

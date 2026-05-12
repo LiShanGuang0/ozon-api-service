@@ -27,6 +27,15 @@ STATUS_LABELS = {
     "info": "提示",
     "archived": "已归档",
 }
+STATUS_LABELS.update(
+    {
+        "import_pending": "商品创建处理中",
+        "stock_updated": "库存设置完成",
+        "attributes_synced": "属性同步完成",
+        "stock_synced": "库存查询完成",
+        "completed": "完整链路完成",
+    }
+)
 
 
 def status_label(status: str | None) -> str:
@@ -101,9 +110,12 @@ class MerchantConsoleService:
         today_event_count = self.events.today_count(client_id=client_id)
         recent_events = self.task_events(client_id=client_id, limit=8)["items"]
 
-        success_count = task_counts.get("imported", 0) + task_counts.get("success", 0)
+        success_count = task_counts.get("completed", 0)
         failed_count = task_counts.get("failed", 0)
-        pending_count = task_counts.get("pending", 0)
+        pending_count = sum(
+            task_counts.get(key, 0)
+            for key in ("import_pending", "imported", "stock_updated", "attributes_synced", "stock_synced", "pending")
+        )
         total_count = sum(task_counts.values())
 
         return {
@@ -159,6 +171,7 @@ class MerchantConsoleService:
         items = []
         for row in rows:
             row["status_label"] = status_label(row.get("status"))
+            row["workflow_status_label"] = status_label(row.get("workflow_status"))
             items.append(row)
         return {"total": total, "page": page, "size": size, "items": items}
 
@@ -182,6 +195,7 @@ class MerchantConsoleService:
         if derived_status:
             task["status"] = derived_status
         task["status_label"] = status_label(task.get("status"))
+        task["workflow_status_label"] = status_label(task.get("workflow_status"))
         return {"task": task, "items": items}
 
     def task_events(
@@ -203,6 +217,7 @@ class MerchantConsoleService:
         )
         items = []
         for row in rows:
+            row["payload"] = parse_json_field(row.get("payload"))
             row["status_label"] = status_label(row.get("status"))
             items.append(row)
         return {

@@ -14,6 +14,7 @@ const tagType = computed(() => {
   switch (props.status) {
     case 'success':
     case 'imported':
+    case 'completed':
       return 'success'
     case 'failed':
       return 'danger'
@@ -21,6 +22,10 @@ const tagType = computed(() => {
       return 'warning'
     case 'pending':
     case 'running':
+    case 'import_pending':
+    case 'stock_updated':
+    case 'attributes_synced':
+    case 'stock_synced':
       return 'primary'
     case 'skipped':
       return 'info'

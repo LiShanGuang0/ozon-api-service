@@ -76,6 +76,18 @@ class ProductImportItem(SchemaModel):
     pdf_list: list[dict[str, Any]] = Field(default_factory=list, description="PDF 文件列表。")
     attributes: list[ProductAttribute] = Field(default_factory=list, description="商品普通属性。必填属性来自类目特征接口 is_required=true。")
     complex_attributes: list[dict[str, Any]] = Field(default_factory=list, description="商品复合/嵌套属性，例如视频、视频封面等。")
+    warehouse_id: int | None = Field(
+        default=None,
+        gt=0,
+        description="导入成功后要设置库存的 Ozon 仓库 ID。该字段仅供本服务后处理使用，不会转发给 /v3/product/import。",
+        examples=[1020000000000],
+    )
+    stock: int | None = Field(
+        default=None,
+        ge=0,
+        description="导入成功后要设置的可售库存。该字段仅供本服务后处理使用，不会转发给 /v3/product/import。",
+        examples=[10],
+    )
 
 
 class ProductImportRequest(SchemaModel):
@@ -162,24 +174,19 @@ class ProductInfoListRequest(SchemaModel):
         return self
 
 
-class ProductInfoAttributesFilter(SchemaModel):
-    model_config = ConfigDict(extra="forbid", populate_by_name=True)
-
-    offer_id: list[str] = Field(default_factory=list, description="按卖家货号过滤。", examples=[["LOCAL-SKU-001"]])
-    visibility: str | None = Field(default=None, description="商品可见性过滤条件。")
-
-    @model_validator(mode="after")
-    def validate_offer_ids(self) -> "ProductInfoAttributesFilter":
-        if not self.offer_id:
-            raise ValueError("filter.offer_id 至少传一个")
-        return self
-
-
 class ProductInfoAttributesRequest(SchemaModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 
-    filter: ProductInfoAttributesFilter = Field(description="商品过滤条件。")
-    limit: int = Field(default=100, ge=1, le=1000, description="每页数量，1 到 1000。")
-    last_id: str = Field(default="", description="分页游标。首次查询留空；下一页传上次响应 last_id。")
-    sort_by: str | None = Field(default=None, description="排序字段。")
-    sort_dir: str | None = Field(default=None, description="排序方向。")
+    offer_id: str = Field(
+        min_length=1,
+        max_length=50,
+        description="卖家系统商品货号。服务会转为 Ozon filter.offer_id 查询商品已填写属性。",
+        examples=["LOCAL-SKU-001"],
+    )
+
+    @model_validator(mode="after")
+    def validate_offer_id(self) -> "ProductInfoAttributesRequest":
+        self.offer_id = self.offer_id.strip()
+        if not self.offer_id:
+            raise ValueError("offer_id 是必填项")
+        return self

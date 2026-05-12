@@ -41,6 +41,7 @@ export interface TaskEvent {
   request_id: string | null
   message: string
   error_message: string | null
+  payload: unknown
   created_at: string
 }
 
@@ -63,6 +64,10 @@ export interface ProductItem {
   currency_code: string | null
   price: string | number | null
   old_price: string | number | null
+  warehouse_id: number | null
+  warehouse_name: string | null
+  stock: number | null
+  cover_image_url: string | null
   sync_status: string
   sync_status_label: string
   ozon_status: string | null
@@ -70,25 +75,6 @@ export interface ProductItem {
   last_error: unknown
   updated_at: string | null
   created_at: string | null
-}
-
-export interface PushTask {
-  id: number
-  task_id: number
-  action_type: string
-  status: string
-  status_label: string
-  total_count: number
-  success_count: number
-  failed_count: number
-  submitted_at: string | null
-  last_polled_at: string | null
-  finished_at: string | null
-}
-
-export interface PushTaskDetail {
-  task: Record<string, unknown>
-  items: Array<Record<string, unknown>>
 }
 
 export interface TaskEventsResult {
@@ -127,14 +113,6 @@ export function getProfile() {
 
 export function getProducts(params: Record<string, unknown>) {
   return http.get<unknown, PageResult<ProductItem>>('/merchant/products', { params })
-}
-
-export function getPushTasks(params: Record<string, unknown>) {
-  return http.get<unknown, PageResult<PushTask>>('/merchant/push-tasks', { params })
-}
-
-export function getPushTaskDetail(taskId: number) {
-  return http.get<unknown, PushTaskDetail>(`/merchant/push-tasks/${taskId}`)
 }
 
 export function getTaskEvents(params: Record<string, unknown>) {

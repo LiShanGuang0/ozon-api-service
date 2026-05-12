@@ -72,6 +72,20 @@ watch(locale, () => {
 
     <el-table v-loading="loading" :data="products" class="data-table" row-key="id">
       <el-table-column prop="offer_id" :label="t('offerId')" min-width="150" fixed />
+      <el-table-column :label="t('productImage')" width="96">
+        <template #default="{ row }">
+          <el-image
+            v-if="row.cover_image_url"
+            class="product-thumb"
+            :src="row.cover_image_url"
+            fit="cover"
+            lazy
+            :preview-src-list="[row.cover_image_url]"
+            preview-teleported
+          />
+          <span v-else class="image-placeholder">-</span>
+        </template>
+      </el-table-column>
       <el-table-column :label="t('productName')" min-width="220" show-overflow-tooltip>
         <template #default="{ row }">
           {{ translatedText(row.name) || '-' }}
@@ -80,6 +94,14 @@ watch(locale, () => {
       <el-table-column prop="product_id" :label="t('ozonProductId')" width="150" />
       <el-table-column prop="sku" label="SKU" width="130" />
       <el-table-column prop="price" :label="t('price')" width="110" />
+      <el-table-column :label="t('inventoryInfo')" min-width="190">
+        <template #default="{ row }">
+          <div class="inventory-cell">
+            <span>{{ t('warehouseName') }}：{{ row.warehouse_name || '-' }}</span>
+            <strong>{{ t('stockQty') }}：{{ row.stock ?? '-' }}</strong>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column :label="t('status')" width="160">
         <template #default="{ row }">
           <StatusTag :status="row.sync_status" :label="row.sync_status_label" />

@@ -139,6 +139,7 @@ curl -X POST "http://127.0.0.1:8000/api/ozon/proxy/v1/description-category/tree"
 | `POST /api/ozon/products/pictures/import` | `/v1/product/pictures/import` | 上传或更新商品图片 |
 | `POST /api/ozon/products/info/list` | `/v3/product/info/list` | 查询商品信息 |
 | `POST /api/ozon/products/info/attributes` | `/v3/products/info/attributes` | 查询商品已填属性 |
+| `POST /api/ozon/products/stocks` | `/v2/products/stocks` | 按 `offer_id` 转发设置商品库存 |
 
 ## 创建商品示例
 

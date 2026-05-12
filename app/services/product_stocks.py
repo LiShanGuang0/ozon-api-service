@@ -67,6 +67,47 @@ class ProductStockService:
             )
             raise
 
+    async def products_stocks(self, *, payload: dict[str, Any], credentials: OzonCredentials) -> dict[str, Any]:
+        request_payload = {
+            "stocks": [
+                {
+                    "offer_id": payload["offer_id"],
+                    "warehouse_id": payload["warehouse_id"],
+                    "stock": payload["stock"],
+                }
+            ]
+        }
+        self.events.emit(
+            client_id=credentials.client_id,
+            event_type="stock_update",
+            status="pending",
+            message="开始转发商品库存更新",
+            offer_id=str(payload["offer_id"]),
+            payload=request_payload,
+        )
+        try:
+            data = await self.forwarder.post(OzonEndpoint.PRODUCTS_STOCKS_UPDATE, request_payload, credentials)
+            self.events.emit(
+                client_id=credentials.client_id,
+                event_type="stock_update",
+                status="success",
+                message="商品库存更新转发完成",
+                offer_id=str(payload["offer_id"]),
+                payload=request_payload,
+            )
+            return data
+        except Exception as exc:
+            self.events.emit(
+                client_id=credentials.client_id,
+                event_type="stock_update",
+                status="failed",
+                message="商品库存更新转发失败",
+                offer_id=str(payload["offer_id"]),
+                error_message=str(exc),
+                payload=request_payload,
+            )
+            raise
+
     async def update_stocks(self, *, payload: dict[str, Any], credentials: OzonCredentials) -> dict[str, Any]:
         request_id = str(uuid4())
         stock_rows = payload.get("stocks") or []

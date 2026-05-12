@@ -69,13 +69,13 @@ class MerchantProductRepository:
         limit: int,
         offset: int,
     ) -> list[dict[str, Any]]:
-        filters = ["client_id = %s"]
+        filters = ["p.client_id = %s"]
         params: list[Any] = [client_id]
         if status:
-            filters.append("sync_status = %s")
+            filters.append("p.sync_status = %s")
             params.append(status)
         if keyword:
-            filters.append("(offer_id LIKE %s OR name LIKE %s OR local_sku LIKE %s)")
+            filters.append("(p.offer_id LIKE %s OR p.name LIKE %s OR p.local_sku LIKE %s)")
             like = f"%{keyword}%"
             params.extend([like, like, like])
 
@@ -83,12 +83,15 @@ class MerchantProductRepository:
         return fetch_all(
             f"""
             SELECT
-              id, client_id, local_sku, offer_id, product_id, sku, name,
-              description_category_id, type_id, currency_code, price, old_price,
-              sync_status, ozon_status, last_task_id, last_error, updated_at, created_at
-            FROM ozon_products
+              p.id, p.client_id, p.local_sku, p.offer_id, p.product_id, p.sku, p.name,
+              p.description_category_id, p.type_id, p.currency_code, p.price, p.old_price,
+              p.warehouse_id, w.name AS warehouse_name, p.stock, p.cover_image_url,
+              p.sync_status, p.ozon_status, p.last_task_id, p.last_error, p.updated_at, p.created_at
+            FROM ozon_products p
+            LEFT JOIN ozon_warehouses w
+              ON w.client_id = p.client_id AND w.warehouse_id = p.warehouse_id
             WHERE {" AND ".join(filters)}
-            ORDER BY updated_at DESC, id DESC
+            ORDER BY p.updated_at DESC, p.id DESC
             LIMIT %s OFFSET %s
             """,
             params,
@@ -146,7 +149,7 @@ class MerchantImportTaskRepository:
         return fetch_all(
             f"""
             SELECT
-              t.id, t.client_id, t.task_id, t.action_type, t.status,
+              t.id, t.client_id, t.task_id, t.action_type, t.status, t.workflow_status,
               t.submitted_at, t.last_polled_at, t.finished_at,
               COALESCE(i.total_count, 0) AS total_count,
               COALESCE(i.success_count, 0) AS success_count,
@@ -200,7 +203,7 @@ class MerchantImportTaskRepository:
     def items(self, *, client_id: str, task_id: int) -> list[dict[str, Any]]:
         return fetch_all(
             """
-            SELECT id, client_id, task_id, offer_id, product_id, status, errors, raw_item, created_at, updated_at
+            SELECT id, client_id, task_id, offer_id, product_id, warehouse_id, stock, status, errors, raw_item, created_at, updated_at
             FROM ozon_import_task_items
             WHERE client_id = %s AND task_id = %s
             ORDER BY id ASC
@@ -211,10 +214,10 @@ class MerchantImportTaskRepository:
     def today_status_counts(self, *, client_id: str) -> list[dict[str, Any]]:
         return fetch_all(
             """
-            SELECT status, COUNT(*) AS count
+            SELECT workflow_status AS status, COUNT(*) AS count
             FROM ozon_import_tasks
             WHERE client_id = %s AND submitted_at >= CURDATE()
-            GROUP BY status
+            GROUP BY workflow_status
             """,
             (client_id,),
         )
@@ -291,7 +294,7 @@ class TaskEventRepository:
             f"""
             SELECT
               id, client_id, event_type, ref_type, ref_id, ozon_task_id, request_id,
-              offer_id, product_id, sku, status, message, error_message, created_at
+              offer_id, product_id, sku, status, message, error_message, payload, created_at
             FROM ozon_task_events
             WHERE {" AND ".join(filters)}
             ORDER BY id DESC

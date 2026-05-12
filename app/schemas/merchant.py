@@ -66,6 +66,10 @@ class MerchantProductItem(SchemaModel):
     currency_code: str | None = None
     price: Decimal | None = None
     old_price: Decimal | None = None
+    warehouse_id: int | None = None
+    warehouse_name: str | None = None
+    stock: int | None = None
+    cover_image_url: str | None = None
     sync_status: str
     sync_status_label: str
     ozon_status: str | None = None
@@ -81,6 +85,8 @@ class MerchantTaskItem(SchemaModel):
     action_type: str
     status: str
     status_label: str
+    workflow_status: str | None = None
+    workflow_status_label: str | None = None
     total_count: int = 0
     success_count: int = 0
     failed_count: int = 0
@@ -106,6 +112,7 @@ class MerchantTaskEventItem(SchemaModel):
     request_id: str | None = None
     message: str
     error_message: str | None = None
+    payload: Any = None
     created_at: datetime
 
 

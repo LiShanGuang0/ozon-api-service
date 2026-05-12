@@ -23,8 +23,6 @@ const dictionaries: Record<Locale, Record<string, string>> = {
     todayCount: '今日 {count} 条',
     readingConsole: '正在读取控制台日志',
     emptyConsole: '暂无控制台日志',
-    pushTasks: '推送任务',
-    pushTasksDesc: '查看任务列表、单品结果和失败原因',
     products: '商品列表',
     productsDesc: '查看已推送商品、Ozon ID、SKU 和同步状态',
     merchantInfo: '商户信息',
@@ -37,6 +35,7 @@ const dictionaries: Record<Locale, Record<string, string>> = {
     status: '状态',
     query: '查询',
     offerId: '商品货号',
+    productImage: '商品图片',
     productName: '商品名称',
     ozonProductId: 'Ozon商品ID',
     price: '价格',
@@ -106,8 +105,6 @@ const dictionaries: Record<Locale, Record<string, string>> = {
     todayCount: 'Today {count}',
     readingConsole: 'Reading console logs',
     emptyConsole: 'No console logs',
-    pushTasks: 'Push Tasks',
-    pushTasksDesc: 'View task list, item results, and failure reasons',
     products: 'Products',
     productsDesc: 'View pushed products, Ozon ID, SKU, and sync status',
     merchantInfo: 'Merchant Info',
@@ -120,6 +117,7 @@ const dictionaries: Record<Locale, Record<string, string>> = {
     status: 'Status',
     query: 'Search',
     offerId: 'Offer ID',
+    productImage: 'Image',
     productName: 'Product Name',
     ozonProductId: 'Ozon Product ID',
     price: 'Price',
@@ -142,6 +140,11 @@ const dictionaries: Record<Locale, Record<string, string>> = {
     pending: 'Processing',
     running: 'Running',
     imported: 'Succeeded',
+    import_pending: 'Product creation processing',
+    stock_updated: 'Stock updated',
+    attributes_synced: 'Attributes synced',
+    stock_synced: 'Stock checked',
+    completed: 'Full workflow completed',
     skipped: 'Duplicate product data creation (skipped)',
     info: 'Info',
     archived: 'Archived',
@@ -189,8 +192,6 @@ const dictionaries: Record<Locale, Record<string, string>> = {
     todayCount: 'Сегодня {count}',
     readingConsole: 'Чтение логов',
     emptyConsole: 'Логов нет',
-    pushTasks: 'Задачи отправки',
-    pushTasksDesc: 'Список задач, результаты товаров и причины ошибок',
     products: 'Товары',
     productsDesc: 'Товары, Ozon ID, SKU и статус синхронизации',
     merchantInfo: 'Информация',
@@ -203,6 +204,7 @@ const dictionaries: Record<Locale, Record<string, string>> = {
     status: 'Статус',
     query: 'Поиск',
     offerId: 'Артикул',
+    productImage: 'Фото',
     productName: 'Название',
     ozonProductId: 'Ozon ID',
     price: 'Цена',
@@ -258,7 +260,36 @@ const dictionaries: Record<Locale, Record<string, string>> = {
   },
 }
 
+const extraDictionary: Record<Locale, Record<string, string>> = {
+  zh: {
+    inventoryInfo: '库存信息',
+    warehouseId: '仓库 ID',
+    warehouseName: '仓库',
+    stockQty: '库存',
+    reservedStock: '占用',
+  },
+  en: {
+    inventoryInfo: 'Inventory',
+    warehouseId: 'Warehouse ID',
+    warehouseName: 'Warehouse',
+    stockQty: 'Stock',
+    reservedStock: 'Reserved',
+  },
+  ru: {
+    inventoryInfo: 'Остатки',
+    warehouseId: 'ID склада',
+    warehouseName: 'Склад',
+    stockQty: 'Остаток',
+    reservedStock: 'Зарезервировано',
+  },
+}
+
 const messageMap: Record<string, Record<Locale, string>> = {
+  '商品推送完整链路完成': {
+    zh: '商品推送完整链路完成',
+    en: 'Product push workflow completed',
+    ru: 'Полная цепочка отправки товара завершена',
+  },
   '开始查询商品创建额度': {
     zh: '开始查询商品创建额度',
     en: 'Querying product creation quota',
@@ -386,7 +417,7 @@ export function setLocale(value: Locale) {
 export function useI18n() {
   const currentLocale = computed(() => locale.value)
   const t = (key: string, vars?: Record<string, string | number>) => {
-    let text = dictionaries[locale.value][key] || dictionaries.zh[key] || key
+    let text = extraDictionary[locale.value][key] || extraDictionary.zh[key] || dictionaries[locale.value][key] || dictionaries.zh[key] || key
     if (vars) {
       Object.entries(vars).forEach(([name, value]) => {
         text = text.replace(`{${name}}`, String(value))
@@ -396,6 +427,34 @@ export function useI18n() {
   }
   const statusText = (status?: string | null, fallback?: string | null) => {
     const key = normalizeStatus(status)
+    const workflowText: Record<string, Record<Locale, string>> = {
+      import_pending: {
+        zh: '商品创建处理中',
+        en: 'Product creation processing',
+        ru: 'Создание товара выполняется',
+      },
+      stock_updated: {
+        zh: '库存设置完成',
+        en: 'Stock updated',
+        ru: 'Остаток обновлен',
+      },
+      attributes_synced: {
+        zh: '属性同步完成',
+        en: 'Attributes synced',
+        ru: 'Атрибуты синхронизированы',
+      },
+      stock_synced: {
+        zh: '库存查询完成',
+        en: 'Stock checked',
+        ru: 'Остаток проверен',
+      },
+      completed: {
+        zh: '完整链路完成',
+        en: 'Full workflow completed',
+        ru: 'Полная цепочка завершена',
+      },
+    }
+    if (workflowText[key]) return workflowText[key][locale.value]
     return dictionaries[locale.value][key] || fallback || status || t('unknown')
   }
   const messageText = (message?: string | null): string => {

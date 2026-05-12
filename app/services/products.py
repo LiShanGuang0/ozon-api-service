@@ -61,6 +61,17 @@ class ProductQueryService:
                 product_id=product_id,
                 payload={"image_count": len(request_payload["images"])},
             )
+            self.products.sync_images_from_item(
+                client_id=credentials.client_id,
+                item={
+                    "offer_id": offer_id,
+                    "product_id": product_id,
+                    "images": request_payload["images"],
+                    "images360": request_payload["images360"],
+                    "color_image": request_payload["color_image"],
+                    "primary_image": request_payload["images"][0] if request_payload["images"] else None,
+                },
+            )
             return data
         except Exception as exc:
             self.events.emit(
@@ -76,7 +87,7 @@ class ProductQueryService:
             raise
 
     async def info_list(self, *, payload: dict[str, Any], credentials: OzonCredentials) -> dict[str, Any]:
-        return await self._with_event(
+        data = await self._with_event(
             credentials=credentials,
             event_type="product_query",
             start_message="开始查询商品信息",
@@ -85,16 +96,24 @@ class ProductQueryService:
             payload=payload,
             call=lambda: self.forwarder.post(OzonEndpoint.PRODUCT_INFO_LIST, payload, credentials),
         )
+        for item in _response_items(data):
+            self.products.update_identifiers_from_info_item(client_id=credentials.client_id, item=item)
+        return data
 
     async def info_attributes(self, *, payload: dict[str, Any], credentials: OzonCredentials) -> dict[str, Any]:
+        request_payload = {
+            "filter": {"offer_id": [payload["offer_id"]]},
+            "limit": 100,
+            "last_id": "",
+        }
         return await self._with_event(
             credentials=credentials,
             event_type="product_query",
             start_message="开始查询商品已填写属性",
             success_message="商品已填写属性查询完成",
             failure_message="商品已填写属性查询失败",
-            payload=payload,
-            call=lambda: self.forwarder.post(OzonEndpoint.PRODUCT_INFO_ATTRIBUTES, payload, credentials),
+            payload=request_payload,
+            call=lambda: self.forwarder.post(OzonEndpoint.PRODUCT_INFO_ATTRIBUTES, request_payload, credentials),
         )
 
     async def _with_event(

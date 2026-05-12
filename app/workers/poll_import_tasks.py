@@ -24,11 +24,14 @@ async def poll_once(limit: int = 50, min_age_seconds: int = 300) -> None:
     store = CredentialStore()
     service = ProductImportService()
     for row in rows:
-        credentials = store.load(row["credential_ref"]) if row.get("credential_ref") else None
-        if credentials is None:
-            logger.warning("Skip task %s: credential is missing or expired", row["task_id"])
-            continue
-        await service.poll_import_task(task_id=int(row["task_id"]), credentials=credentials)
+        try:
+            credentials = store.load(row["credential_ref"]) if row.get("credential_ref") else None
+            if credentials is None:
+                logger.warning("Skip task %s: credential is missing or expired", row["task_id"])
+                continue
+            await service.poll_import_task(task_id=int(row["task_id"]), credentials=credentials)
+        except Exception:
+            logger.exception("Failed to poll import task %s", row["task_id"])
 
 
 def main() -> None:

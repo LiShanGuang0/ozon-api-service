@@ -71,6 +71,7 @@ flowchart LR
 | `POST /api/ozon/products/archive` | 按 `offer_id` 归档商品 | `/v3/product/info/list`、`/v1/product/archive`、`/v3/product/info/list` | 是，归档批次、明细、商品状态、历史 |
 | `POST /api/ozon/products/unarchive` | 按 `offer_id` 从归档还原商品 | `/v3/product/info/list`、`/v1/product/unarchive`、`/v3/product/info/list` | 是，还原批次、明细、商品状态、历史 |
 | `POST /api/ozon/warehouses/list` | 查询仓库列表 | `/v2/warehouse/list` | 是，仓库缓存 |
+| `POST /api/ozon/products/stocks` | 按 `offer_id` 转发设置商品可售库存 | `/v2/products/stocks` | 否，仅 API 调用日志 |
 | `POST /api/ozon/products/stocks/update` | 按 `offer_id` 设置商品可售库存 | `/v2/warehouse/list`、`/v3/product/info/list`、`/v2/products/stocks`、可选 `/v4/product/info/stocks` | 是，库存批次、明细、仓库、商品库存 |
 | `GET /api/health` | API 健康检查 | 无 | 否 |
 | `GET /health` | 根路径健康检查 | 无 | 否 |
@@ -464,12 +465,7 @@ flowchart LR
 
 | 字段 | 类型 | 必填 | 默认值 | 说明 |
 | --- | --- | --- | --- | --- |
-| `filter.offer_id` | array[string] | 是 | `[]` | 按卖家货号过滤 |
-| `filter.visibility` | string/null | 否 | `null` | 商品可见性过滤 |
-| `limit` | integer | 否 | `100` | 每页数量，1 到 1000 |
-| `last_id` | string | 否 | `""` | 分页游标 |
-| `sort_by` | string/null | 否 | `null` | 排序字段 |
-| `sort_dir` | string/null | 否 | `null` | 排序方向 |
+| `offer_id` | string | 是 | - | 卖家系统商品货号；服务内部转为 Ozon `filter.offer_id` |
 
 响应参数：
 
@@ -625,6 +621,33 @@ flowchart LR
 | --- | --- |
 | `ozon_warehouses` | 按 `client_id + warehouse_id` upsert 仓库：`warehouse_id`、`name`、`status`、`is_rfbs`、`is_kgt`、`raw_payload` |
 | `ozon_api_call_logs` | 记录 `/v2/warehouse/list` 调用日志 |
+
+### `POST /api/ozon/products/stocks`
+
+轻量库存更新直转接口。调用方按单个商品传 `offer_id`，服务内部组装为 Ozon `/v2/products/stocks` 的 `stocks[].offer_id` 请求体。
+
+| 项 | 说明 |
+| --- | --- |
+| 路由文件 | `app/api/routes/stocks.py` |
+| 服务 | `ProductStockService.products_stocks` |
+| Ozon API | `POST /v2/products/stocks` |
+| 能做什么 | 按 `offer_id`、仓库和库存数量直接转发设置商品可售库存 |
+
+请求参数：
+
+| 字段 | 类型 | 必填 | 默认值 | 说明 |
+| --- | --- | --- | --- | --- |
+| `offer_id` | string | 是 | 无 | 卖家系统商品货号；服务内部转为 `stocks[].offer_id` |
+| `warehouse_id` | integer | 是 | 无 | Ozon 仓库 ID，来自 `/v2/warehouse/list` |
+| `stock` | integer | 是 | 无 | 要设置的可售库存数量，不能小于 0 |
+
+响应参数：
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| 任意字段 | object | Ozon `/v2/products/stocks` 原始响应 |
+
+落库：不写业务表，仅写 `ozon_api_call_logs`。
 
 ### `POST /api/ozon/products/stocks/update`
 

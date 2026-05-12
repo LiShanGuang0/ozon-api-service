@@ -13,7 +13,7 @@ class OzonEndpoint:
     PRODUCT_ATTRIBUTES_UPDATE = "v1/product/attributes/update"
     PRODUCT_PICTURES_IMPORT = "v1/product/pictures/import"
     PRODUCT_INFO_LIST = "v3/product/info/list"
-    PRODUCT_INFO_ATTRIBUTES = "v3/products/info/attributes"
+    PRODUCT_INFO_ATTRIBUTES = "v4/product/info/attributes"
     PRODUCT_INFO_STOCKS = "v4/product/info/stocks"
 
     PRODUCT_ARCHIVE = "v1/product/archive"

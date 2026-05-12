@@ -20,7 +20,10 @@ CREATE TABLE IF NOT EXISTS `ozon_products` (
   `offer_id` VARCHAR(50) NOT NULL COMMENT '卖家系统商品货号，Ozon 创建/更新核心标识',
   `product_id` BIGINT UNSIGNED NULL COMMENT 'Ozon product_id，创建成功后回写',
   `sku` BIGINT UNSIGNED NULL COMMENT 'Ozon SKU，如接口返回则回写',
+  `warehouse_id` BIGINT UNSIGNED NULL COMMENT '导入成功后设置库存使用的 Ozon 仓库 ID',
+  `stock` INT UNSIGNED NULL COMMENT '导入成功后设置的可售库存数量',
   `name` VARCHAR(500) NULL COMMENT '商品名称',
+  `cover_image_url` VARCHAR(2048) NULL COMMENT '商品列表封面图 URL',
   `description_category_id` BIGINT UNSIGNED NULL COMMENT '类目 ID',
   `type_id` BIGINT UNSIGNED NULL COMMENT '商品类型 ID',
   `currency_code` VARCHAR(16) NULL COMMENT '币种，例如 RUB、CNY、USD',
@@ -87,7 +90,10 @@ CREATE TABLE IF NOT EXISTS `ozon_import_tasks` (
   `task_id` BIGINT UNSIGNED NOT NULL COMMENT 'Ozon 异步任务 ID',
   `action_type` VARCHAR(32) NOT NULL COMMENT '任务类型：product_import/attribute_update/picture_import',
   `status` VARCHAR(32) NOT NULL DEFAULT 'pending' COMMENT '任务状态：pending/imported/failed/skipped/partial',
+  `workflow_status` VARCHAR(32) NOT NULL DEFAULT 'import_pending' COMMENT '完整链路状态：import_pending/imported/stock_updated/attributes_synced/stock_synced/completed/failed',
   `credential_ref` VARCHAR(128) NULL COMMENT 'Redis 中短期凭证引用，不保存明文 Api-Key',
+  `default_warehouse_id` BIGINT UNSIGNED NULL COMMENT '本次导入请求默认仓库 ID',
+  `default_stock` INT UNSIGNED NULL COMMENT '本次导入请求默认可售库存',
   `request_payload` LONGTEXT NULL COMMENT '提交 Ozon 的请求体，不含 Api-Key',
   `response_payload` LONGTEXT NULL COMMENT 'Ozon 创建任务响应',
   `result_payload` LONGTEXT NULL COMMENT '轮询任务结果',
@@ -100,6 +106,7 @@ CREATE TABLE IF NOT EXISTS `ozon_import_tasks` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_ozon_import_tasks_client_task` (`client_id`, `task_id`),
   KEY `idx_ozon_import_tasks_status` (`client_id`, `status`, `last_polled_at`),
+  KEY `idx_ozon_import_tasks_workflow_status` (`client_id`, `workflow_status`, `submitted_at`),
   KEY `idx_ozon_import_tasks_action` (`client_id`, `action_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='Ozon 商品导入/更新异步任务';
 
@@ -109,6 +116,8 @@ CREATE TABLE IF NOT EXISTS `ozon_import_task_items` (
   `task_id` BIGINT UNSIGNED NOT NULL COMMENT 'Ozon 异步任务 ID',
   `offer_id` VARCHAR(50) NOT NULL COMMENT '商品货号',
   `product_id` BIGINT UNSIGNED NULL COMMENT 'Ozon product_id',
+  `warehouse_id` BIGINT UNSIGNED NULL COMMENT '本次导入成功后设置库存使用的 Ozon 仓库 ID',
+  `stock` INT UNSIGNED NULL COMMENT '本次导入成功后设置的可售库存数量',
   `status` VARCHAR(32) NOT NULL DEFAULT 'pending' COMMENT '单商品任务状态',
   `errors` LONGTEXT NULL COMMENT 'Ozon 返回的单商品错误数组',
   `raw_item` LONGTEXT NULL COMMENT '单商品结果原文',

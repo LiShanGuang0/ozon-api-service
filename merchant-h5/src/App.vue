@@ -2,6 +2,9 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Box, Home, LogOut } from 'lucide-vue-next'
+import zhCn from 'element-plus/es/locale/lang/zh-cn'
+import en from 'element-plus/es/locale/lang/en'
+import ru from 'element-plus/es/locale/lang/ru'
 
 import { useI18n, type Locale } from './i18n'
 import { useMerchantStore } from './stores/merchant'
@@ -13,6 +16,11 @@ const { locale, setLocale, t } = useI18n()
 const currentLocale = computed({
   get: () => locale.value,
   set: (value: Locale) => setLocale(value),
+})
+const elementLocale = computed(() => {
+  if (locale.value === 'ru') return ru
+  if (locale.value === 'en') return en
+  return zhCn
 })
 
 const pageTitle = computed(() => t(String(route.meta.titleKey || 'workspace')))
@@ -31,6 +39,7 @@ function logout() {
 </script>
 
 <template>
+  <el-config-provider :locale="elementLocale">
   <div class="app-shell cockpit-shell" :class="{ 'login-shell': isLogin }">
     <RouterView v-if="isLogin" />
     <main v-if="!isLogin" class="main-area">
@@ -77,4 +86,5 @@ function logout() {
       <RouterView v-if="!isLogin" />
     </main>
   </div>
+  </el-config-provider>
 </template>

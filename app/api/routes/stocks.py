@@ -4,6 +4,7 @@ from app.api.deps import OzonCredentials, get_ozon_credentials
 from app.schemas.stocks import (
     ProductStockUpdateRequest,
     ProductStockUpdateResponse,
+    ProductsStocksRequest,
     WarehouseListRequest,
 )
 from app.services.product_stocks import ProductStockService
@@ -21,6 +22,18 @@ async def list_warehouses(
     credentials: OzonCredentials = Depends(get_ozon_credentials),
 ) -> dict:
     return await ProductStockService().list_warehouses(payload=payload.model_dump(), credentials=credentials)
+
+
+@router.post(
+    "/products/stocks",
+    summary="转发设置商品库存",
+    description="转发 Ozon /v2/products/stocks。对外按单个 offer_id、warehouse_id、stock 接收，服务内部组装 stocks[].offer_id。",
+)
+async def products_stocks(
+    payload: ProductsStocksRequest,
+    credentials: OzonCredentials = Depends(get_ozon_credentials),
+) -> dict:
+    return await ProductStockService().products_stocks(payload=payload.model_dump(), credentials=credentials)
 
 
 @router.post(

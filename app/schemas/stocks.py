@@ -1,6 +1,6 @@
 from typing import Any, Literal
 
-from pydantic import ConfigDict, Field
+from pydantic import ConfigDict, Field, model_validator
 
 from app.schemas.common import SchemaModel
 
@@ -26,6 +26,26 @@ class ProductStockUpdateItem(SchemaModel):
     )
     warehouse_id: int = Field(description="Ozon 仓库 ID，来自 /v2/warehouse/list。", examples=[22142605386000])
     stock: int = Field(ge=0, description="要设置的可售库存数量，不包含已预留库存。", examples=[10])
+
+
+class ProductsStocksRequest(SchemaModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    offer_id: str = Field(
+        min_length=1,
+        max_length=50,
+        description="卖家系统商品货号。服务会转为 Ozon stocks[].offer_id。",
+        examples=["LOCAL-SKU-001"],
+    )
+    warehouse_id: int = Field(description="Ozon 仓库 ID，来自 /v2/warehouse/list。", examples=[22142605386000])
+    stock: int = Field(ge=0, description="要设置的可售库存数量，不包含已预留库存。", examples=[10])
+
+    @model_validator(mode="after")
+    def validate_offer_id(self) -> "ProductsStocksRequest":
+        self.offer_id = self.offer_id.strip()
+        if not self.offer_id:
+            raise ValueError("offer_id 是必填项")
+        return self
 
 
 class ProductStockUpdateRequest(SchemaModel):

@@ -499,7 +499,43 @@ Body：
 | `has_next` | 是否还有下一页 |
 | `cursor` | 下一页游标 |
 
-### 4.2 修改商品仓库库存
+### 4.2 直接转发修改商品仓库库存
+
+| 配置 | 值 |
+| --- | --- |
+| Method | `POST` |
+| URL | `http://127.0.0.1:8000/api/ozon/products/stocks` |
+| 转发 Ozon | `/v2/products/stocks` |
+| 是否写库 | 否；仅写请求日志 |
+
+Body：
+
+```json
+{
+  "offer_id": "LOCAL-SKU-001",
+  "warehouse_id": 20605650762000,
+  "stock": 10
+}
+```
+
+请求字段：
+
+| 字段 | 必填 | 类型 | 说明 |
+| --- | --- | --- | --- |
+| `offer_id` | 是 | string | 本地商品货号；服务内部转为 `stocks[].offer_id` |
+| `warehouse_id` | 是 | integer | 仓库 ID，来自 `/api/ozon/warehouses/list` |
+| `stock` | 是 | integer | 要设置的可售库存，不能小于 0 |
+
+关键返回字段：
+
+| 字段 | 说明 |
+| --- | --- |
+| `result[].offer_id` | 商品货号 |
+| `result[].warehouse_id` | 仓库 ID |
+| `result[].updated` | 是否更新成功 |
+| `result[].errors` | Ozon 返回的错误列表 |
+
+### 4.3 修改商品仓库库存工作流
 
 | 配置 | 值 |
 | --- | --- |

@@ -6,6 +6,21 @@ import { getTaskEvents, type TaskEvent } from '../api/merchant'
 import { useI18n } from '../i18n'
 import { useDynamicTranslations } from '../composables/useDynamicTranslations'
 
+interface CompletionProduct {
+  offer_id?: string | null
+  name?: string | null
+  product_id?: number | string | null
+  sku?: number | string | null
+  price?: number | string | null
+  currency_code?: string | null
+  cover_image_url?: string | null
+  warehouse_name?: string | null
+  requested_stock?: number | string | null
+  stock?: number | string | null
+  present?: number | string | null
+  reserved?: number | string | null
+}
+
 const props = withDefaults(
   defineProps<{
     embedded?: boolean
@@ -42,7 +57,11 @@ async function loadEvents() {
 
 function ensureErrorTranslations() {
   return ensureTranslations(
-    events.value.flatMap((event) => [event.message, event.error_message]),
+    events.value.flatMap((event) => [
+      event.message,
+      event.error_message,
+      ...completionProducts(event).map((product) => product.name),
+    ]),
   )
 }
 
@@ -64,6 +83,17 @@ function eventMeta(event: TaskEvent) {
   if (event.product_id) parts.push(`product=${event.product_id}`)
   if (event.sku) parts.push(`sku=${event.sku}`)
   return parts.join(' ')
+}
+
+function completionProducts(event: TaskEvent): CompletionProduct[] {
+  if (event.event_type !== 'product_import_completion') return []
+  if (!event.payload || typeof event.payload !== 'object') return []
+  const products = (event.payload as { products?: unknown }).products
+  return Array.isArray(products) ? (products as CompletionProduct[]) : []
+}
+
+function productStock(product: CompletionProduct) {
+  return product.present ?? product.stock ?? product.requested_stock ?? '-'
 }
 
 onMounted(() => {
@@ -112,6 +142,34 @@ watch(locale, () => {
             {{ translatedText(event.message) }}
             <small v-if="eventMeta(event)" class="console-meta">{{ eventMeta(event) }}</small>
           </p>
+          <div v-if="completionProducts(event).length" class="completion-card-list">
+            <article
+              v-for="product in completionProducts(event)"
+              :key="String(product.offer_id || product.product_id || product.sku)"
+              class="completion-card"
+            >
+              <el-image
+                v-if="product.cover_image_url"
+                class="completion-thumb"
+                :src="product.cover_image_url"
+                fit="cover"
+                lazy
+                preview-teleported
+                :preview-src-list="[product.cover_image_url]"
+              />
+              <span v-else class="completion-thumb placeholder">-</span>
+              <div class="completion-info">
+                <strong>{{ translatedText(product.name) || product.offer_id || '-' }}</strong>
+                <span>offer={{ product.offer_id || '-' }} · SKU={{ product.sku || '-' }}</span>
+                <span>{{ t('warehouseName') }}：{{ product.warehouse_name || '-' }}</span>
+              </div>
+              <div class="completion-stock">
+                <span>{{ t('stockQty') }}</span>
+                <strong>{{ productStock(product) }}</strong>
+                <small>{{ t('reservedStock') }}：{{ product.reserved ?? '-' }}</small>
+              </div>
+            </article>
+          </div>
           <small v-if="event.error_message">{{ translatedText(event.error_message) }}</small>
         </div>
       </article>
