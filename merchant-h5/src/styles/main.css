@@ -61,8 +61,27 @@ a,
     #eef3fb;
 }
 
+.activation-admin-page {
+  display: grid;
+  min-height: 100vh;
+  place-items: center;
+  padding: 28px;
+  background:
+    linear-gradient(120deg, rgba(23, 105, 255, 0.14), transparent 38%),
+    linear-gradient(320deg, rgba(22, 163, 74, 0.12), transparent 42%),
+    #eef3fb;
+}
+
 .login-card {
   width: min(520px, 100%);
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.activation-admin-card {
+  width: min(1180px, 100%);
   padding: 28px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -118,6 +137,123 @@ a,
   color: var(--muted);
   font-size: 14px;
   line-height: 1.6;
+}
+
+.activation-device {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-soft);
+}
+
+.activation-device span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.activation-device strong {
+  color: var(--text);
+  font-size: 13px;
+  word-break: break-all;
+}
+
+.activation-admin-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
+}
+
+.activation-token-row {
+  display: grid;
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+}
+
+.activation-token-row .el-button svg,
+.activation-list-header .el-button svg {
+  margin-right: 6px;
+}
+
+.activation-result {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+  padding: 16px;
+  border: 1px solid #cde3d4;
+  border-radius: 8px;
+  background: var(--green-soft);
+}
+
+.activation-result > span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.activation-code-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.activation-code-row strong {
+  color: var(--green);
+  font-size: 26px;
+  letter-spacing: 0.08em;
+}
+
+.activation-code-row .el-button svg {
+  margin-right: 6px;
+}
+
+.activation-result p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  word-break: break-all;
+}
+
+.activation-list-panel {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.activation-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.activation-list-header h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 20px;
+}
+
+.activation-list-header p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.activation-table-code {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.activation-table-code strong {
+  color: var(--text);
+  font-size: 13px;
+  letter-spacing: 0.04em;
 }
 
 .login-button {

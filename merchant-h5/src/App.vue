@@ -26,6 +26,7 @@ const elementLocale = computed(() => {
 const pageTitle = computed(() => t(String(route.meta.titleKey || 'workspace')))
 const isCockpit = computed(() => route.path === '/dashboard')
 const isLogin = computed(() => route.path === '/login')
+const isStandalone = computed(() => Boolean(route.meta.standalone))
 
 function goHome() {
   router.push('/dashboard')
@@ -40,10 +41,10 @@ function logout() {
 
 <template>
   <el-config-provider :locale="elementLocale">
-  <div class="app-shell cockpit-shell" :class="{ 'login-shell': isLogin }">
-    <RouterView v-if="isLogin" />
-    <main v-if="!isLogin" class="main-area">
-      <header v-if="!isLogin" class="topbar cockpit-topbar">
+  <div class="app-shell cockpit-shell" :class="{ 'login-shell': isLogin || isStandalone }">
+    <RouterView v-if="isLogin || isStandalone" />
+    <main v-if="!isLogin && !isStandalone" class="main-area">
+      <header v-if="!isLogin && !isStandalone" class="topbar cockpit-topbar">
         <div class="brand compact-brand">
         <div class="brand-mark">
           <Box :size="22" />
@@ -83,7 +84,7 @@ function logout() {
         </div>
       </header>
 
-      <RouterView v-if="!isLogin" />
+      <RouterView v-if="!isLogin && !isStandalone" />
     </main>
   </div>
   </el-config-provider>

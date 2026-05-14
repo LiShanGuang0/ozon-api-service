@@ -23,6 +23,49 @@ export interface MerchantProfile {
   last_error: string | null
 }
 
+export interface AppActivationCheckResult {
+  bound: boolean
+  expired: boolean
+  activation_required: boolean
+  status: string | null
+  reason: string | null
+  client_id: string | null
+  expires_at: string | null
+}
+
+export interface AppActivationBindResult {
+  bound: boolean
+  client_id: string
+  expires_at: string
+  profile: MerchantProfile
+}
+
+export interface AppActivationCodeCreateResult {
+  device_id: string
+  client_id: string
+  activation_code: string
+  expires_at: string
+  status: string
+}
+
+export interface AppActivationCodeItem {
+  id: number
+  device_id: string
+  mac_address: string | null
+  client_id: string
+  activation_code: string | null
+  status: string
+  expires_at: string
+  activated_at: string | null
+  last_seen_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface AppActivationCodeListResult {
+  items: AppActivationCodeItem[]
+}
+
 export interface DashboardMetric {
   key: string
   label: string
@@ -101,6 +144,47 @@ export function bootstrapMerchant(payload: { client_id: string; api_key: string 
     '/merchant/bootstrap',
     payload,
   )
+}
+
+export function checkActivation(payload: { device_id: string; mac_address?: string | null }) {
+  return http.post<unknown, AppActivationCheckResult>('/app-activations/check', payload)
+}
+
+export function bindActivation(payload: {
+  device_id: string
+  mac_address?: string | null
+  client_id: string
+  api_key: string
+  activation_code: string
+}) {
+  return http.post<unknown, AppActivationBindResult>('/app-activations/bind', payload)
+}
+
+export function createActivationCode(
+  payload: {
+    device_id: string
+    mac_address?: string | null
+    client_id: string
+    api_key: string
+    activation_code?: string | null
+    valid_days?: number
+    expires_at?: string | null
+  },
+  adminToken: string,
+) {
+  return http.post<unknown, AppActivationCodeCreateResult>('/app-activations/codes', payload, {
+    headers: {
+      'X-Admin-Token': adminToken,
+    },
+  })
+}
+
+export function listActivationCodes(adminToken: string) {
+  return http.get<unknown, AppActivationCodeListResult>('/app-activations/codes', {
+    headers: {
+      'X-Admin-Token': adminToken,
+    },
+  })
 }
 
 export function getDashboard() {

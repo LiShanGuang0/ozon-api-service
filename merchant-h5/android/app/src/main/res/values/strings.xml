@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Ozon Merchant H5</string>
+    <string name="title_activity_main">Ozon Merchant H5</string>
+    <string name="package_name">com.selftproject.ozonmerchant</string>
+    <string name="custom_url_scheme">com.selftproject.ozonmerchant</string>
+</resources>

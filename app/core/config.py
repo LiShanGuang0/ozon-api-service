@@ -32,6 +32,15 @@ class Settings(BaseSettings):
     import_task_poller_interval_seconds: int = Field(default=10, alias="IMPORT_TASK_POLLER_INTERVAL_SECONDS")
     import_task_poller_batch_size: int = Field(default=50, alias="IMPORT_TASK_POLLER_BATCH_SIZE")
     import_task_poller_min_age_seconds: int = Field(default=300, alias="IMPORT_TASK_POLLER_MIN_AGE_SECONDS")
+    app_activation_admin_token: str = Field(default="", alias="APP_ACTIVATION_ADMIN_TOKEN")
+    cors_allow_origins: str = Field(
+        default="https://localhost,http://localhost,http://localhost:5173,http://127.0.0.1:5173,capacitor://localhost,https://www.stgpu.com",
+        alias="CORS_ALLOW_ORIGINS",
+    )
+
+    @property
+    def cors_origins(self) -> list[str]:
+        return [origin.strip() for origin in self.cors_allow_origins.split(",") if origin.strip()]
 
 
 @lru_cache
