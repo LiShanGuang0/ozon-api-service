@@ -8,6 +8,7 @@ class OzonEndpoint:
     CATEGORY_ATTRIBUTE_VALUES_SEARCH = "v1/description-category/attribute/values/search"
 
     PRODUCT_INFO_LIMIT = "v4/product/info/limit"
+    PRODUCT_LIST = "v3/product/list"
     PRODUCT_IMPORT = "v3/product/import"
     PRODUCT_IMPORT_INFO = "v1/product/import/info"
     PRODUCT_ATTRIBUTES_UPDATE = "v1/product/attributes/update"

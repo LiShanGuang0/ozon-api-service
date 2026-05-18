@@ -113,6 +113,50 @@ class ProductImportTaskResponse(SchemaModel):
     data: dict[str, Any] = Field(default_factory=dict, description="Ozon /v1/product/import/info 原始响应。")
 
 
+class ProductListFilter(SchemaModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    offer_id: list[str] = Field(default_factory=list, description="按卖家货号过滤，最多 1000 个。")
+    product_id: list[int | str] = Field(default_factory=list, description="按 Ozon 商品 ID 过滤，最多 1000 个。")
+    visibility: str | None = Field(default=None, description="Ozon 商品可见性过滤条件。")
+
+    @model_validator(mode="after")
+    def validate_identifier_groups(self) -> "ProductListFilter":
+        if self.offer_id and self.product_id:
+            raise ValueError("filter.offer_id 和 filter.product_id 只能传其中一种")
+        if len(self.offer_id) > 1000:
+            raise ValueError("filter.offer_id 不能超过 1000 个")
+        if len(self.product_id) > 1000:
+            raise ValueError("filter.product_id 不能超过 1000 个")
+        return self
+
+
+class ProductListWithAttributesRequest(SchemaModel):
+    model_config = ConfigDict(extra="forbid", populate_by_name=True)
+
+    filter: ProductListFilter = Field(default_factory=ProductListFilter, description="Ozon /v3/product/list 查询过滤条件。")
+    last_id: str = Field(default="", description="分页游标。首次查询传空字符串。")
+    limit: int = Field(default=100, ge=1, le=1000, description="本次查询商品数量，最大 1000。")
+    attributes_limit: int = Field(default=1000, ge=1, le=1000, description="查询详情时传给 /v4/product/info/attributes 的 limit。")
+
+
+class ProductListWithAttributesItem(SchemaModel):
+    product_id: int | None = Field(default=None, description="Ozon 商品 ID。")
+    offer_id: str | None = Field(default=None, description="卖家系统商品货号。")
+    list_item: dict[str, Any] = Field(default_factory=dict, description="/v3/product/list 返回的商品列表项。")
+    attributes: dict[str, Any] | None = Field(default=None, description="/v4/product/info/attributes 返回的商品详情项。")
+
+
+class ProductListWithAttributesResponse(SchemaModel):
+    items: list[ProductListWithAttributesItem] = Field(default_factory=list, description="合并后的商品列表和属性详情。")
+    total: int | None = Field(default=None, description="/v3/product/list 返回的商品总数。")
+    last_id: str = Field(default="", description="/v3/product/list 返回的下一页游标。")
+    attribute_total: int | str | None = Field(default=None, description="/v4/product/info/attributes 返回的详情总数。")
+    attribute_last_id: str = Field(default="", description="/v4/product/info/attributes 返回的详情下一页游标。")
+    product_list: dict[str, Any] = Field(default_factory=dict, description="Ozon /v3/product/list 原始响应。")
+    attributes_result: dict[str, Any] = Field(default_factory=dict, description="Ozon /v4/product/info/attributes 原始响应。")
+
+
 class ProductAttributesUpdateRequest(SchemaModel):
     model_config = ConfigDict(extra="forbid", populate_by_name=True)
 

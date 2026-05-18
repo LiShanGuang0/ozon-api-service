@@ -30,6 +30,73 @@ class ProductQueryService:
             call=lambda: self.forwarder.post(OzonEndpoint.PRODUCT_INFO_LIMIT, {}, credentials),
         )
 
+    async def list_with_attributes(self, *, payload: dict[str, Any], credentials: OzonCredentials) -> dict[str, Any]:
+        list_payload = self._product_list_payload(payload)
+        product_list = await self._with_event(
+            credentials=credentials,
+            event_type="product_query",
+            start_message="开始查询商品列表",
+            success_message="商品列表查询完成",
+            failure_message="商品列表查询失败",
+            payload=list_payload,
+            call=lambda: self.forwarder.post(OzonEndpoint.PRODUCT_LIST, list_payload, credentials),
+        )
+
+        list_items = _product_list_items(product_list)
+        attributes_payload = self._attributes_payload_from_list_items(
+            list_items=list_items,
+            attributes_limit=int(payload.get("attributes_limit") or 1000),
+        )
+        attributes_result: dict[str, Any] = {}
+        attribute_items: list[dict[str, Any]] = []
+        if attributes_payload:
+            attributes_result = await self._with_event(
+                credentials=credentials,
+                event_type="product_query",
+                start_message="开始查询商品属性详情",
+                success_message="商品属性详情查询完成",
+                failure_message="商品属性详情查询失败",
+                payload=attributes_payload,
+                call=lambda: self.forwarder.post(OzonEndpoint.PRODUCT_INFO_ATTRIBUTES, attributes_payload, credentials),
+            )
+            attribute_items = _product_attribute_items(attributes_result)
+
+        attributes_by_product_id = {
+            product_id: item for item in attribute_items if (product_id := _item_product_id(item)) is not None
+        }
+        attributes_by_offer_id = {
+            offer_id: item for item in attribute_items if (offer_id := item.get("offer_id")) is not None
+        }
+
+        merged_items = []
+        for item in list_items:
+            product_id = _item_product_id(item)
+            offer_id = item.get("offer_id")
+            attributes = None
+            if product_id is not None:
+                attributes = attributes_by_product_id.get(product_id)
+            if attributes is None and offer_id is not None:
+                attributes = attributes_by_offer_id.get(offer_id)
+            merged_items.append(
+                {
+                    "product_id": product_id,
+                    "offer_id": offer_id,
+                    "list_item": item,
+                    "attributes": attributes,
+                }
+            )
+
+        list_result = product_list.get("result") if isinstance(product_list.get("result"), dict) else {}
+        return {
+            "items": merged_items,
+            "total": list_result.get("total"),
+            "last_id": str(list_result.get("last_id") or ""),
+            "attribute_total": _product_attribute_total(attributes_result),
+            "attribute_last_id": _product_attribute_last_id(attributes_result),
+            "product_list": product_list,
+            "attributes_result": attributes_result,
+        }
+
     async def pictures_import(self, *, payload: dict[str, Any], credentials: OzonCredentials) -> dict[str, Any]:
         offer_id = payload.get("offer_id")
         if not offer_id:
@@ -116,6 +183,51 @@ class ProductQueryService:
             call=lambda: self.forwarder.post(OzonEndpoint.PRODUCT_INFO_ATTRIBUTES, request_payload, credentials),
         )
 
+    def _product_list_payload(self, payload: dict[str, Any]) -> dict[str, Any]:
+        filters = payload.get("filter") or {}
+        cleaned_filter: dict[str, Any] = {}
+        if filters.get("offer_id"):
+            cleaned_filter["offer_id"] = filters["offer_id"]
+        if filters.get("product_id"):
+            cleaned_filter["product_id"] = [str(value) for value in filters["product_id"]]
+        if filters.get("visibility"):
+            cleaned_filter["visibility"] = filters["visibility"]
+
+        return {
+            "filter": cleaned_filter,
+            "last_id": payload.get("last_id") or "",
+            "limit": int(payload.get("limit") or 100),
+        }
+
+    def _attributes_payload_from_list_items(
+        self,
+        *,
+        list_items: list[dict[str, Any]],
+        attributes_limit: int,
+    ) -> dict[str, Any] | None:
+        product_ids = []
+        offer_ids = []
+        for item in list_items:
+            product_id = _item_product_id(item)
+            if product_id is not None:
+                product_ids.append(product_id)
+            elif item.get("offer_id"):
+                offer_ids.append(item["offer_id"])
+
+        filter_payload: dict[str, Any]
+        if product_ids:
+            filter_payload = {"product_id": product_ids[:1000]}
+        elif offer_ids:
+            filter_payload = {"offer_id": offer_ids[:1000]}
+        else:
+            return None
+
+        return {
+            "filter": filter_payload,
+            "limit": min(attributes_limit, len(product_ids or offer_ids), 1000),
+            "last_id": "",
+        }
+
     async def _with_event(
         self,
         *,
@@ -189,6 +301,42 @@ def _response_items(data: dict[str, Any]) -> list[dict[str, Any]]:
     if isinstance(result, dict) and isinstance(result.get("items"), list):
         return result["items"]
     return []
+
+
+def _product_list_items(data: dict[str, Any]) -> list[dict[str, Any]]:
+    result = data.get("result")
+    if isinstance(result, dict) and isinstance(result.get("items"), list):
+        return [item for item in result["items"] if isinstance(item, dict)]
+    return [item for item in _response_items(data) if isinstance(item, dict)]
+
+
+def _product_attribute_items(data: dict[str, Any]) -> list[dict[str, Any]]:
+    result = data.get("result")
+    if isinstance(result, list):
+        return [item for item in result if isinstance(item, dict)]
+    if isinstance(result, dict) and isinstance(result.get("items"), list):
+        return [item for item in result["items"] if isinstance(item, dict)]
+    if isinstance(data.get("items"), list):
+        return [item for item in data["items"] if isinstance(item, dict)]
+    return []
+
+
+def _product_attribute_total(data: dict[str, Any]) -> int | str | None:
+    if data.get("total") is not None:
+        return data["total"]
+    result = data.get("result")
+    if isinstance(result, dict):
+        return result.get("total")
+    return None
+
+
+def _product_attribute_last_id(data: dict[str, Any]) -> str:
+    if data.get("last_id") is not None:
+        return str(data["last_id"] or "")
+    result = data.get("result")
+    if isinstance(result, dict):
+        return str(result.get("last_id") or "")
+    return ""
 
 
 def _item_product_id(item: dict[str, Any]) -> int | None:

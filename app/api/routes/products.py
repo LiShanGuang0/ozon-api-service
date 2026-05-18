@@ -10,6 +10,8 @@ from app.schemas.products import (
     ProductImportResponse,
     ProductInfoAttributesRequest,
     ProductInfoListRequest,
+    ProductListWithAttributesRequest,
+    ProductListWithAttributesResponse,
     ProductPicturesImportRequest,
 )
 from app.services.product_import import ProductImportService
@@ -27,6 +29,26 @@ async def product_info_limit(
     credentials: OzonCredentials = Depends(get_ozon_credentials),
 ) -> dict[str, Any]:
     return await ProductQueryService().info_limit(credentials=credentials)
+
+
+@router.post(
+    "/products/list-with-attributes",
+    response_model=ProductListWithAttributesResponse,
+    summary="查询商品列表并获取属性详情",
+    description=(
+        "先调用 Ozon /v3/product/list 查询商品列表，再使用列表中的 product_id 或 offer_id "
+        "调用 /v4/product/info/attributes 获取商品属性、尺寸、重量、图片等详情，并返回合并后的结果。"
+    ),
+)
+async def product_list_with_attributes(
+    payload: ProductListWithAttributesRequest,
+    credentials: OzonCredentials = Depends(get_ozon_credentials),
+) -> ProductListWithAttributesResponse:
+    data = await ProductQueryService().list_with_attributes(
+        payload=payload.model_dump(),
+        credentials=credentials,
+    )
+    return ProductListWithAttributesResponse.model_validate(data)
 
 
 @router.post(
